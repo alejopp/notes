@@ -11,6 +11,7 @@ import 'features/notes/bloc/note_bloc.dart';
 import 'features/notes/bloc/note_event.dart';
 import 'features/notes/data/datasources/note_local_datasource.dart';
 import 'features/notes/data/repositories/note_repository_impl.dart';
+import 'features/notes/presentation/cubit/note_view_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,6 +41,9 @@ class MyApp extends StatelessWidget {
           )..add(
               LoadNotes(),
             ),
+        ),
+        BlocProvider(
+          create: (_) => NoteViewCubit(),
         ),
       ],
       child: BlocBuilder<ThemeCubit, ThemeMode>(

@@ -6,6 +6,7 @@ import 'package:bext_notes/features/notes/bloc/note_bloc.dart';
 import 'package:bext_notes/features/notes/bloc/note_event.dart';
 import 'package:bext_notes/features/notes/bloc/note_state.dart';
 import 'package:bext_notes/features/notes/domain/entities/note_entity.dart';
+import 'package:bext_notes/features/notes/presentation/cubit/note_view_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -20,11 +21,11 @@ class NotesPage extends StatelessWidget {
 
     return Scaffold(
       appBar: _buildAppBar(context),
+      body: _buildBody(context),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showNoteDialog(context),
         child: const Icon(Icons.add),
       ),
-      body: _buildBody(context),
     );
   }
 
@@ -38,29 +39,56 @@ class NotesPage extends StatelessWidget {
   }
 
   Expanded _buildNoteList() {
-    return Expanded(
-      child: BlocBuilder<NoteBloc, NoteState>(
-        builder: (context, state) {
-          if (state is NoteLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is NoteLoaded) {
-            final notes = state.notes;
-            if (notes.isEmpty) {
-              return const Center(child: Text('Sin notas aún.'));
-            }
-            return ListView.builder(
-              itemCount: notes.length,
-              itemBuilder: (_, i) {
-                final note = notes[i];
-                return NoteCard(note: note, onTap: () => _showNoteDialog);
-              },
-            );
-          } else {
-            return const Center(child: Text('Error cargando notas.'));
+    return Expanded(child: BlocBuilder<NoteBloc, NoteState>(
+      builder: (context, state) {
+        if (state is NoteLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is NoteLoaded) {
+          final notes = state.notes;
+          if (notes.isEmpty) {
+            return const Center(child: Text('Sin notas aún.'));
           }
-        },
-      ),
-    );
+
+          return BlocBuilder<NoteViewCubit, NoteViewType>(
+            builder: (context, viewType) {
+              final isGrid = viewType == NoteViewType.grid;
+
+              return isGrid
+                  ? GridView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: notes.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                        childAspectRatio: 3 / 2,
+                      ),
+                      itemBuilder: (_, i) {
+                        final note = notes[i];
+                        return NoteCard(
+                          note: note,
+                          viewType: NoteCardViewType.grid,
+                        );
+                      },
+                    )
+                  : ListView.builder(
+                      itemCount: notes.length,
+                      itemBuilder: (_, i) {
+                        final note = notes[i];
+                        return NoteCard(
+                          note: note,
+                          viewType: NoteCardViewType.list,
+                        );
+                      },
+                    );
+            },
+          );
+        } else {
+          return const Center(child: Text('Error cargando notas.'));
+        }
+      },
+    ));
   }
 
   Padding _buildSearchBar(BuildContext context) {
@@ -98,6 +126,15 @@ class NotesPage extends StatelessWidget {
             context.read<NoteBloc>().add(SortNotes(byTitle: false));
           },
           tooltip: 'Ordenar por fecha',
+        ),
+        BlocBuilder<NoteViewCubit, NoteViewType>(
+          builder: (context, viewType) {
+            return IconButton(
+              icon: Icon(
+                  viewType == NoteViewType.list ? Icons.grid_view : Icons.list),
+              onPressed: () => context.read<NoteViewCubit>().toggleView(),
+            );
+          },
         ),
       ],
     );
