@@ -1,13 +1,15 @@
 import 'package:bext_notes/features/auth/data/repositories/auth_reposotory_impl.dart';
-import 'package:bext_notes/features/auth/presentation/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'core/router/root_router.dart';
 import 'features/auth/bloc/auth_bloc.dart';
 import 'features/auth/bloc/auth_event.dart';
-import 'features/auth/bloc/auth_state.dart';
-import 'features/auth/presentation/pages/login_screen.dart';
+import 'features/notes/bloc/note_bloc.dart';
+import 'features/notes/bloc/note_event.dart';
+import 'features/notes/data/datasources/note_local_datasource.dart';
+import 'features/notes/data/repositories/note_repository_impl.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,17 +34,18 @@ class MyApp extends StatelessWidget {
         theme: ThemeData.dark().copyWith(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
         ),
-        home: BlocBuilder<AuthBloc, AuthState>(
-          builder: (context, state) {
-            if (state is Authenticated) {
-              return const HomeScreen();
-            } else if (state is Unauthenticated || state is AuthError) {
-              return const LoginScreen();
-            } else {
-              return const Scaffold(
-                  body: Center(child: CircularProgressIndicator()));
-            }
-          },
+        home: MultiBlocProvider(
+          providers: [
+            BlocProvider(
+                create: (_) =>
+                    AuthBloc(authRepository)..add(CheckAuthStatus())),
+            BlocProvider(
+              create: (_) => NoteBloc(
+                NoteRepositoryImpl(NoteLocalDatasource()),
+              )..add(LoadNotes()),
+            ),
+          ],
+          child: const RootRouter(),
         ),
       ),
     );
