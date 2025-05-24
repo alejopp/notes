@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'core/theme/theme_cubit.dart';
 import 'features/auth/bloc/auth_bloc.dart';
 import 'features/auth/bloc/auth_event.dart';
 import 'features/auth/bloc/auth_state.dart';
@@ -122,6 +123,23 @@ class HomeScreen extends StatelessWidget {
                 context.read<NoteBloc>().add(SearchNotes(value));
               },
             ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              BlocBuilder<ThemeCubit, ThemeMode>(
+                builder: (context, mode) {
+                  return Switch(
+                    value: mode == ThemeMode.dark,
+                    onChanged: (val) =>
+                        context.read<ThemeCubit>().toggleTheme(val),
+                    activeColor: Colors.teal,
+                  );
+                },
+              ),
+              const Text('Modo oscuro'),
+              const SizedBox(width: 16),
+            ],
           ),
           Expanded(
             child: BlocBuilder<NoteBloc, NoteState>(

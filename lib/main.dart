@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/router/root_router.dart';
+import 'core/theme/theme_cubit.dart';
 import 'features/auth/bloc/auth_bloc.dart';
 import 'features/auth/bloc/auth_event.dart';
 import 'features/notes/bloc/note_bloc.dart';
@@ -26,27 +27,47 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => AuthBloc(authRepository)..add(CheckAuthStatus()),
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Notas App',
-        theme: ThemeData.dark().copyWith(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
-        ),
-        home: MultiBlocProvider(
-          providers: [
-            BlocProvider(
-                create: (_) =>
-                    AuthBloc(authRepository)..add(CheckAuthStatus())),
-            BlocProvider(
-              create: (_) => NoteBloc(
-                NoteRepositoryImpl(NoteLocalDatasource()),
-              )..add(LoadNotes()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+            create: (_) => AuthBloc(authRepository)..add(CheckAuthStatus())),
+        BlocProvider(create: (_) => ThemeCubit()),
+        BlocProvider(
+          create: (_) => NoteBloc(
+            NoteRepositoryImpl(
+              NoteLocalDatasource(),
             ),
-          ],
-          child: const RootRouter(),
+          )..add(
+              LoadNotes(),
+            ),
         ),
+      ],
+      child: BlocBuilder<ThemeCubit, ThemeMode>(
+        builder: (context, themeMode) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Notas',
+            themeMode: themeMode,
+            theme: ThemeData(
+              brightness: Brightness.light,
+              colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
+              useMaterial3: true,
+            ),
+            darkTheme: ThemeData(
+              brightness: Brightness.dark,
+              colorScheme: ColorScheme.fromSeed(
+                  seedColor: Colors.teal, brightness: Brightness.dark),
+              scaffoldBackgroundColor: const Color(0xFF121212),
+              appBarTheme: const AppBarTheme(
+                backgroundColor: Colors.transparent,
+                foregroundColor: Colors.white,
+                elevation: 0,
+              ),
+              useMaterial3: true,
+            ),
+            home: const RootRouter(),
+          );
+        },
       ),
     );
   }
