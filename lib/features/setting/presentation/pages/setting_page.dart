@@ -1,3 +1,4 @@
+import 'package:bext_notes/core/theme/styles.dart';
 import 'package:flutter/material.dart';
 
 class SettingPage extends StatelessWidget {
@@ -5,8 +6,21 @@ class SettingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Configuración', style: TextStyle(fontSize: 24)),
+    return Scaffold(
+      appBar: _buildAppBar(),
+      body: Center(
+        child: Text('Configuración', style: TextStyle(fontSize: 24)),
+      ),
+    );
+  }
+
+  _buildAppBar() {
+    return AppBar(
+      centerTitle: true,
+      title: Text(
+        'Configuración',
+        style: AppStyles.appBarStyle,
+      ),
     );
   }
 }

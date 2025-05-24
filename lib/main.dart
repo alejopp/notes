@@ -1,5 +1,5 @@
 import 'package:bext_notes/features/auth/data/repositories/auth_reposotory_impl.dart';
-import 'package:bext_notes/home_container.dart';
+import 'package:bext_notes/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -65,7 +65,7 @@ class MyApp extends StatelessWidget {
               ),
               useMaterial3: true,
             ),
-            home: const HomeContainer(),
+            home: const HomeScreen(),
           );
         },
       ),
