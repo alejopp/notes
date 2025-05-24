@@ -1,4 +1,4 @@
-import 'package:bext_notes/features/auth/domain/entities/user_entity.dart';
+import 'package:bext_notes/features/profile/domain/user_entity.dart';
 
 abstract class AuthState {}
 

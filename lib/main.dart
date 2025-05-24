@@ -1,9 +1,9 @@
 import 'package:bext_notes/features/auth/data/repositories/auth_reposotory_impl.dart';
+import 'package:bext_notes/home_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'core/router/root_router.dart';
 import 'core/theme/theme_cubit.dart';
 import 'features/auth/bloc/auth_bloc.dart';
 import 'features/auth/bloc/auth_event.dart';
@@ -65,7 +65,7 @@ class MyApp extends StatelessWidget {
               ),
               useMaterial3: true,
             ),
-            home: const RootRouter(),
+            home: const HomeContainer(),
           );
         },
       ),
