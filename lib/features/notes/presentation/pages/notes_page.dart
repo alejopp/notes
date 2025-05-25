@@ -28,17 +28,18 @@ class NotesPage extends StatelessWidget {
     );
   }
 
-  Column _buildBody(BuildContext context) {
-    return Column(
-      children: [
-        _buildSearchBar(context),
-        _buildNoteList(),
-      ],
-    );
+  _buildBody(BuildContext context) {
+    return _buildNoteListSliver();
+    // return Column(
+    //   children: [
+    //     _buildSearchBar(context),
+    //     _buildNoteList(),
+    //   ],
+    // );
   }
 
-  Expanded _buildNoteList() {
-    return Expanded(child: BlocBuilder<NoteBloc, NoteState>(
+  _buildNoteListSliver() {
+    return BlocBuilder<NoteBloc, NoteState>(
       builder: (context, state) {
         if (state is NoteLoading) {
           return const Center(child: CircularProgressIndicator());
@@ -52,42 +53,131 @@ class NotesPage extends StatelessWidget {
             builder: (context, viewType) {
               final isGrid = viewType == NoteViewType.grid;
 
-              return isGrid
-                  ? GridView.builder(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: notes.length,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                        childAspectRatio: 2 / 2,
-                      ),
-                      itemBuilder: (_, i) {
-                        final note = notes[i];
-                        return NoteCard(
-                          note: note,
-                          viewType: NoteCardViewType.grid,
-                        );
-                      },
-                    )
-                  : ListView.builder(
-                      itemCount: notes.length,
-                      itemBuilder: (_, i) {
-                        final note = notes[i];
-                        return NoteCard(
-                          note: note,
-                          viewType: NoteCardViewType.list,
-                        );
-                      },
-                    );
+              return CustomScrollView(
+                slivers: [
+                  _buildSearchBarSliver(context),
+                  const SliverPadding(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  isGrid
+                      ? SliverPadding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          sliver: SliverGrid(
+                            delegate: SliverChildBuilderDelegate(
+                              (context, i) {
+                                final note = notes[i];
+                                return NoteCard(
+                                  note: note,
+                                  viewType: NoteCardViewType.grid,
+                                );
+                              },
+                              childCount: notes.length,
+                            ),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 16,
+                              mainAxisSpacing: 16,
+                              childAspectRatio: 2 / 2,
+                            ),
+                          ),
+                        )
+                      : SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, i) {
+                              final note = notes[i];
+                              return NoteCard(
+                                note: note,
+                                viewType: NoteCardViewType.list,
+                              );
+                            },
+                            childCount: notes.length,
+                          ),
+                        ),
+                ],
+              );
             },
           );
         } else {
           return const Center(child: Text('Error cargando notas.'));
         }
       },
-    ));
+    );
+  }
+
+  Expanded _buildNoteList() {
+    return Expanded(
+      child: BlocBuilder<NoteBloc, NoteState>(
+        builder: (context, state) {
+          if (state is NoteLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is NoteLoaded) {
+            final notes = state.notes;
+            if (notes.isEmpty) {
+              return const Center(child: Text('Sin notas aún.'));
+            }
+
+            return BlocBuilder<NoteViewCubit, NoteViewType>(
+              builder: (context, viewType) {
+                final isGrid = viewType == NoteViewType.grid;
+
+                return isGrid
+                    ? GridView.builder(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: notes.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                          childAspectRatio: 2 / 2,
+                        ),
+                        itemBuilder: (_, i) {
+                          final note = notes[i];
+                          return NoteCard(
+                            note: note,
+                            viewType: NoteCardViewType.grid,
+                          );
+                        },
+                      )
+                    : ListView.builder(
+                        itemCount: notes.length,
+                        itemBuilder: (_, i) {
+                          final note = notes[i];
+                          return NoteCard(
+                            note: note,
+                            viewType: NoteCardViewType.list,
+                          );
+                        },
+                      );
+              },
+            );
+          } else {
+            return const Center(child: Text('Error cargando notas.'));
+          }
+        },
+      ),
+    );
+  }
+
+  _buildSearchBarSliver(BuildContext context) {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+        child: TextField(
+          decoration: const InputDecoration(
+            hintText: 'Buscar...',
+            prefixIcon: Icon(Icons.search),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+            ),
+          ),
+          onChanged: (value) {
+            context.read<NoteBloc>().add(SearchNotes(value));
+          },
+        ),
+      ),
+    );
   }
 
   Padding _buildSearchBar(BuildContext context) {

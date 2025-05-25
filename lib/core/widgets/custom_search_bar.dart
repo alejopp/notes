@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomSearchBarWidget extends StatelessWidget {
   final bool searching;
@@ -36,7 +37,7 @@ class CustomSearchBarWidget extends StatelessWidget {
               fontSize: 14.sp,
             ),
             decoration: InputDecoration(
-              hintText: context.searchBreadHint,
+              hintText: 'Buscar',
               hintStyle: TextStyle(fontSize: 12.sp, color: Colors.grey),
               filled: true,
               prefixIcon: searching
