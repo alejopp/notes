@@ -1,5 +1,4 @@
-import 'package:bext_notes/core/theme/styles.dart';
-import 'package:bext_notes/core/widgets/note_card.dart';
+import 'package:bext_notes/core/widgets/cards/note_card.dart';
 import 'package:bext_notes/features/auth/bloc/auth_bloc.dart';
 import 'package:bext_notes/features/auth/bloc/auth_state.dart';
 import 'package:bext_notes/features/notes/bloc/note_bloc.dart';
@@ -62,7 +61,7 @@ class NotesPage extends StatelessWidget {
                         crossAxisCount: 2,
                         crossAxisSpacing: 16,
                         mainAxisSpacing: 16,
-                        childAspectRatio: 3 / 2,
+                        childAspectRatio: 2 / 2,
                       ),
                       itemBuilder: (_, i) {
                         final note = notes[i];
@@ -111,7 +110,7 @@ class NotesPage extends StatelessWidget {
   _buildAppBar(BuildContext context) {
     return AppBar(
       centerTitle: true,
-      title: Text('Notas', style: AppStyles.appBarStyle),
+      title: Text('Notas'),
       actions: [
         IconButton(
           icon: const Icon(Icons.sort_by_alpha),

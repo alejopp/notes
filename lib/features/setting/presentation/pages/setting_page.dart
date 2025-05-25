@@ -1,4 +1,3 @@
-import 'package:bext_notes/core/theme/styles.dart';
 import 'package:flutter/material.dart';
 
 class SettingPage extends StatelessWidget {
@@ -19,7 +18,6 @@ class SettingPage extends StatelessWidget {
       centerTitle: true,
       title: Text(
         'Configuración',
-        style: AppStyles.appBarStyle,
       ),
     );
   }

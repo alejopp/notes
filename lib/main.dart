@@ -1,3 +1,5 @@
+import 'package:bext_notes/core/extentions/theme_extention.dart';
+import 'package:bext_notes/core/theme/custom_color_scheme.dart';
 import 'package:bext_notes/features/auth/data/repositories/auth_reposotory_impl.dart';
 import 'package:bext_notes/home_screen.dart';
 import 'package:flutter/material.dart';
@@ -54,19 +56,34 @@ class MyApp extends StatelessWidget {
             themeMode: themeMode,
             theme: ThemeData(
               brightness: Brightness.light,
-              colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
+              colorScheme: CustomColorScheme.lightScheme(),
+              cardColor: CustomColorScheme.lightScheme().primary,
+              appBarTheme: AppBarTheme(
+                centerTitle: true,
+                titleTextStyle: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: CustomColorScheme.lightScheme().onPrimary,
+                ),
+              ),
               useMaterial3: true,
             ),
             darkTheme: ThemeData(
               brightness: Brightness.dark,
-              colorScheme: ColorScheme.fromSeed(
-                  seedColor: Colors.teal, brightness: Brightness.dark),
-              scaffoldBackgroundColor: const Color(0xFF121212),
-              appBarTheme: const AppBarTheme(
-                backgroundColor: Colors.transparent,
-                foregroundColor: Colors.white,
-                elevation: 0,
+              colorScheme: CustomColorScheme.darkScheme(),
+              cardColor: CustomColorScheme.darkScheme().primary,
+              appBarTheme: AppBarTheme(
+                centerTitle: true,
+                titleTextStyle: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: context.colorScheme.onPrimary,
+                ),
               ),
+              // scaffoldBackgroundColor: const Color(0xFF121212),
+              // appBarTheme: const AppBarTheme(
+              //   backgroundColor: Colors.transparent,
+              //   foregroundColor: Colors.white,
+              //   elevation: 0,
+              // ),
               useMaterial3: true,
             ),
             home: const HomeScreen(),

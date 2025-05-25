@@ -1,4 +1,3 @@
-import 'package:bext_notes/core/theme/styles.dart';
 import 'package:flutter/material.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -19,7 +18,6 @@ class ProfilePage extends StatelessWidget {
       centerTitle: true,
       title: Text(
         'Perfil',
-        style: AppStyles.appBarStyle,
       ),
     );
   }
