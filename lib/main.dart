@@ -1,7 +1,7 @@
 import 'package:bext_notes/core/extentions/theme_extention.dart';
+import 'package:bext_notes/core/router/root_router.dart';
 import 'package:bext_notes/core/theme/custom_color_scheme.dart';
 import 'package:bext_notes/features/auth/data/repositories/auth_reposotory_impl.dart';
-import 'package:bext_notes/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -91,7 +91,7 @@ class MyApp extends StatelessWidget {
                 // ),
                 useMaterial3: true,
               ),
-              home: const HomeScreen(),
+              home: const RootRouter(),
             ),
           );
         },

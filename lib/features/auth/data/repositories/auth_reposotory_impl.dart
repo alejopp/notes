@@ -20,12 +20,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<void> logout() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('email');
-    await prefs.remove('password');
-    await prefs.remove('token');
-  }
+  Future<void> logout() async {}
 
   @override
   Future<UserEntity?> getCurrentUser() async {
