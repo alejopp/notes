@@ -1,7 +1,10 @@
-import 'package:bext_notes/features/auth/bloc/auth_bloc.dart';
-import 'package:bext_notes/features/auth/bloc/auth_state.dart';
+import 'package:bext_notes/core/theme/theme_cubit.dart';
+import 'package:bext_notes/core/widgets/dialogs/change_password_dialog.dart';
+import 'package:bext_notes/features/setting/bloc/setting_state.dart';
+import 'package:bext_notes/features/setting/presentation/cubit/setting_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
@@ -20,127 +23,99 @@ class _SettingPageState extends State<SettingPage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Scaffold(
-      appBar: AppBar(title: const Text('Configuración')),
-      body: ListView(
-        children: [
-          _buildExpandableSetting(
-            title: 'Tema',
-            expanded: themeExpanded,
-            onTap: () => setState(() => themeExpanded = !themeExpanded),
-            switchValue: themeSwitch,
-            onSwitchChanged: (val) => setState(() => themeSwitch = val),
-            children: themeSwitch
-                ? [
-                    RadioListTile(
-                      title: const Text('Claro'),
-                      value: ThemeMode.light,
-                      groupValue:
-                          Theme.of(context).brightness == Brightness.light
-                              ? ThemeMode.light
-                              : ThemeMode.dark,
-                      onChanged: (val) {
-                        // Lógica para cambiar tema
-                      },
-                    ),
-                    RadioListTile(
-                      title: const Text('Oscuro'),
-                      value: ThemeMode.dark,
-                      groupValue:
-                          Theme.of(context).brightness == Brightness.light
-                              ? ThemeMode.light
-                              : ThemeMode.dark,
-                      onChanged: (val) {
-                        // Lógica para cambiar tema
-                      },
-                    ),
-                  ]
-                : [],
-          ),
-          const Divider(),
-          _buildExpandableSetting(
-            title: 'Idioma',
-            expanded: languageExpanded,
-            onTap: () => setState(() => languageExpanded = !languageExpanded),
-            switchValue: languageSwitch,
-            onSwitchChanged: (val) => setState(() => languageSwitch = val),
-            children: languageSwitch
-                ? [
-                    ListTile(
-                      title: const Text('Español'),
-                      onTap: () {
-                        // Cambiar idioma a español
-                      },
-                    ),
-                    ListTile(
-                      title: const Text('Inglés'),
-                      onTap: () {
-                        // Cambiar idioma a inglés
-                      },
-                    ),
-                  ]
-                : [],
-          ),
-          const Divider(),
-          ListTile(
-            title: const Text('Cambiar contraseña'),
-            leading: const Icon(Icons.lock),
-            onTap: () {
-              // Ir a pantalla de cambiar contraseña
-            },
-          ),
-          const Divider(),
-          BlocBuilder<AuthBloc, AuthState>(
-            builder: (context, state) {
-              if (state is Authenticated) {
-                return Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Token actual:',
-                          style: TextStyle(fontWeight: FontWeight.w600)),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: SelectableText(
-                              showToken
-                                  ? state.user.token
-                                  : '••••••••••••••••••••••••',
-                              style: theme.textTheme.bodyLarge?.copyWith(
-                                fontFamily: 'Courier',
-                              ),
-                            ),
-                          ),
-                          IconButton(
-                            icon: Icon(showToken
-                                ? Icons.visibility_off
-                                : Icons.visibility),
-                            onPressed: () =>
-                                setState(() => showToken = !showToken),
-                          ),
-                        ],
-                      ),
-                    ],
+    return BlocBuilder<SettingCubit, SettingState>(builder: (context, state) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Configuración')),
+        body: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+          child: ListView(
+            children: [
+              _buildExpandableSetting(
+                title: 'Tema',
+                expanded: themeExpanded,
+                onTap: () => setState(() => themeExpanded = !themeExpanded),
+                children: [
+                  RadioListTile(
+                    title: const Text('Claro'),
+                    value: ThemeMode.light,
+                    groupValue:
+                        state.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+                    onChanged: (val) {
+                      context.read<SettingCubit>().toggleDarkMode();
+                      final themeMode =
+                          state.isDarkMode ? ThemeMode.light : ThemeMode.dark;
+                      context.read<ThemeCubit>().setTheme(themeMode);
+                    },
                   ),
-                );
-              }
-              return const SizedBox.shrink();
-            },
-          )
-        ],
-      ),
-    );
+                  RadioListTile(
+                    title: const Text('Oscuro'),
+                    value: ThemeMode.dark,
+                    groupValue:
+                        state.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+                    onChanged: (val) {
+                      context.read<SettingCubit>().toggleDarkMode();
+                      final themeMode =
+                          state.isDarkMode ? ThemeMode.light : ThemeMode.dark;
+                      context.read<ThemeCubit>().setTheme(themeMode);
+                    },
+                  ),
+                ],
+              ),
+              const Divider(),
+              _buildExpandableSetting(
+                title: 'Idioma',
+                expanded: languageExpanded,
+                onTap: () =>
+                    setState(() => languageExpanded = !languageExpanded),
+                children: [
+                  ListTile(
+                    title: const Text('Español'),
+                    onTap: () {
+                      // Cambiar idioma a español
+                    },
+                  ),
+                  ListTile(
+                    title: const Text('Inglés'),
+                    onTap: () {
+                      // Cambiar idioma a inglés
+                    },
+                  ),
+                ],
+              ),
+              const Divider(),
+              ListTile(
+                title: const Text('Cambiar contraseña'),
+                leading: const Icon(Icons.lock),
+                onTap: () async {
+                  await _showChangePasswordDialog(context);
+                },
+              ),
+              const Divider(),
+              ListTile(
+                title: const Text('Token actual'),
+                subtitle: state.isTokenVisible
+                    ? SelectableText(state.token)
+                    : const Text('••••••••••••••••••••••'),
+                trailing: IconButton(
+                  icon: Icon(state.isTokenVisible
+                      ? Icons.visibility_off
+                      : Icons.visibility),
+                  onPressed: () {
+                    context.read<SettingCubit>().toggleTokenVisibility();
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    });
   }
 
   Widget _buildExpandableSetting({
     required String title,
     required bool expanded,
     required VoidCallback onTap,
-    required bool switchValue,
-    required ValueChanged<bool> onSwitchChanged,
     required List<Widget> children,
   }) {
     return Column(
@@ -148,11 +123,17 @@ class _SettingPageState extends State<SettingPage> {
         ListTile(
           title: Text(title),
           leading: Icon(expanded ? Icons.expand_less : Icons.expand_more),
-          trailing: Switch(value: switchValue, onChanged: onSwitchChanged),
           onTap: onTap,
         ),
-        if (expanded && switchValue) ...children,
+        if (expanded) ...children,
       ],
+    );
+  }
+
+  Future<void> _showChangePasswordDialog(BuildContext context) async {
+    await showDialog(
+      context: context,
+      builder: (_) => const ChangePasswordDialog(),
     );
   }
 }

@@ -2,11 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// enum ThemeMode {
+//   light,
+//   dark,
+// }
+
 class ThemeCubit extends Cubit<ThemeMode> {
   static const _themeKey = 'theme_mode';
 
   ThemeCubit() : super(ThemeMode.system) {
     _loadTheme();
+  }
+
+  void setTheme(ThemeMode mode) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('theme_mode', mode.name);
+    emit(mode);
   }
 
   void _loadTheme() async {

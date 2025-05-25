@@ -28,21 +28,23 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _pages[_currentIndex],
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _currentIndex,
-        onDestinationSelected: (index) {
-          setState(() => _currentIndex = index);
-        },
-        destinations: [
-          NavigationDestination(
-              icon: Icon(Icons.person), label: Pages.profile.name),
-          NavigationDestination(
-              icon: Icon(Icons.note), label: Pages.notes.name),
-          NavigationDestination(
-              icon: Icon(Icons.settings), label: Pages.setting.name),
-        ],
+    return SafeArea(
+      child: Scaffold(
+        body: _pages[_currentIndex],
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: _currentIndex,
+          onDestinationSelected: (index) {
+            setState(() => _currentIndex = index);
+          },
+          destinations: [
+            NavigationDestination(
+                icon: Icon(Icons.person), label: Pages.profile.name),
+            NavigationDestination(
+                icon: Icon(Icons.note), label: Pages.notes.name),
+            NavigationDestination(
+                icon: Icon(Icons.settings), label: Pages.setting.name),
+          ],
+        ),
       ),
     );
   }
