@@ -3,6 +3,7 @@ import 'package:bext_notes/features/auth/bloc/auth_event.dart';
 import 'package:bext_notes/features/auth/bloc/auth_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,6 +18,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
 
   void _login() {
+    FocusScope.of(context).unfocus();
     if (_formKey.currentState!.validate()) {
       context.read<AuthBloc>().add(
             LoginRequested(
@@ -29,27 +31,32 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: BlocListener<AuthBloc, AuthState>(
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      body: SafeArea(
+        child: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is AuthError) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.message)),
               );
             }
+            if (state is Authenticated) {
+              FocusScope.of(context).unfocus(); // ✅ Cerrar teclado
+            }
           },
-          child: Center(
+          child: SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Form(
                 key: _formKey,
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Iniciar Sesión",
-                        style: TextStyle(fontSize: 24)),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 80.h),
+                    Text("Iniciar Sesión", style: TextStyle(fontSize: 24.sp)),
+                    SizedBox(height: 20.h),
                     TextFormField(
                       controller: _emailController,
                       decoration: const InputDecoration(
@@ -61,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10.h),
                     TextFormField(
                       controller: _passwordController,
                       decoration:
@@ -74,14 +81,17 @@ class _LoginScreenState extends State<LoginScreen> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20.h),
                     BlocBuilder<AuthBloc, AuthState>(
                       builder: (context, state) {
                         return state is AuthLoading
                             ? const CircularProgressIndicator()
-                            : ElevatedButton(
-                                onPressed: _login,
-                                child: const Text('Ingresar'),
+                            : SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: _login,
+                                  child: const Text('Ingresar'),
+                                ),
                               );
                       },
                     ),
