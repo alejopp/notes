@@ -3,9 +3,32 @@ import 'package:bext_notes/features/notes/domain/entities/note_entity.dart';
 import 'package:bext_notes/features/notes/presentation/widgets/note_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class NotesPage extends StatelessWidget {
+class NotesPage extends StatefulWidget {
   const NotesPage({super.key});
+
+  @override
+  State<NotesPage> createState() => _NotesPageState();
+}
+
+class _NotesPageState extends State<NotesPage> {
+  final TextEditingController _searchController = TextEditingController();
+  final ValueNotifier<bool> _showClear = ValueNotifier(false);
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(() {
+      final isNotEmpty = _searchController.text.isNotEmpty;
+      _showClear.value = isNotEmpty;
+
+      if (!isNotEmpty) {
+        FocusScope.of(context).unfocus();
+        context.read<NoteBloc>().add(SearchNotes(''));
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,9 +95,6 @@ class NotesPage extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         } else if (state is NoteLoaded) {
           final notes = state.notes;
-          if (notes.isEmpty) {
-            return const Center(child: Text('Sin notas aún.'));
-          }
 
           return BlocBuilder<NoteViewCubit, NoteViewType>(
             builder: (context, viewType) {
@@ -82,45 +102,54 @@ class NotesPage extends StatelessWidget {
 
               return CustomScrollView(
                 slivers: [
-                  _buildSearchBarSliver(context),
-                  const SliverPadding(
-                    padding: EdgeInsets.symmetric(vertical: 16),
+                  SliverToBoxAdapter(
+                    child: SizedBox(height: 20.h),
                   ),
-                  isGrid
-                      ? SliverPadding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          sliver: SliverGrid(
-                            delegate: SliverChildBuilderDelegate(
-                              (context, i) {
-                                final note = notes[i];
-                                return NoteCard(
-                                  note: note,
-                                  viewType: NoteCardViewType.grid,
-                                );
-                              },
-                              childCount: notes.length,
-                            ),
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              crossAxisSpacing: 16,
-                              mainAxisSpacing: 16,
-                              childAspectRatio: 2 / 2,
-                            ),
-                          ),
-                        )
-                      : SliverList(
-                          delegate: SliverChildBuilderDelegate(
-                            (context, i) {
-                              final note = notes[i];
-                              return NoteCard(
-                                note: note,
-                                viewType: NoteCardViewType.list,
-                              );
-                            },
-                            childCount: notes.length,
-                          ),
+                  _buildSearchBarSliver(context),
+                  SliverPadding(padding: EdgeInsets.symmetric(vertical: 8.h)),
+                  if (notes.isEmpty)
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(
+                        child: Text('Sin notas aún.'),
+                      ),
+                    )
+                  else if (isGrid)
+                    SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      sliver: SliverGrid(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, i) {
+                            final note = notes[i];
+                            return NoteCard(
+                              note: note,
+                              viewType: NoteCardViewType.grid,
+                            );
+                          },
+                          childCount: notes.length,
                         ),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                          childAspectRatio: 2 / 2,
+                        ),
+                      ),
+                    )
+                  else
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, i) {
+                          final note = notes[i];
+                          return NoteCard(
+                            note: note,
+                            viewType: NoteCardViewType.list,
+                          );
+                        },
+                        childCount: notes.length,
+                      ),
+                    ),
                 ],
               );
             },
@@ -136,17 +165,31 @@ class NotesPage extends StatelessWidget {
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
-        child: TextField(
-          decoration: const InputDecoration(
-            hintText: 'Buscar...',
-            prefixIcon: Icon(Icons.search),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(10)),
+        child: ValueListenableBuilder<bool>(
+          valueListenable: _showClear,
+          builder: (_, show, __) => TextField(
+            controller: _searchController,
+            decoration: InputDecoration(
+              hintText: 'Buscar...',
+              prefixIcon: const Icon(Icons.search),
+              suffixIcon: show
+                  ? IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: () {
+                        _searchController.clear();
+                        FocusScope.of(context).unfocus();
+                        context.read<NoteBloc>().add(SearchNotes(''));
+                      },
+                    )
+                  : null,
+              border: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
             ),
+            onChanged: (value) {
+              context.read<NoteBloc>().add(SearchNotes(value));
+            },
           ),
-          onChanged: (value) {
-            context.read<NoteBloc>().add(SearchNotes(value));
-          },
         ),
       ),
     );

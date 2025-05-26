@@ -36,6 +36,11 @@ class NoteBloc extends Bloc<NotesEvent, NoteState> {
     });
 
     on<SearchNotes>((event, emit) {
+      if (event.query.trim().isEmpty) {
+        emit(NoteLoaded(List.from(_allNotes)));
+        return;
+      }
+
       final filtered = _allNotes
           .where((note) =>
               note.title.toLowerCase().contains(event.query.toLowerCase()) ||

@@ -18,15 +18,23 @@ class NoteDetailPage extends StatelessWidget {
   }
 
   AppBar _buildAppBar(BuildContext context) {
-    return AppBar(title: Text('Detalle de nota'), actions: [
-      IconButton(
-        icon: const Icon(Icons.delete),
-        onPressed: () {
-          context.read<NoteBloc>().add(DeleteNote(note.id!));
-          Navigator.pop(context);
-        },
-      ),
-    ]);
+    return AppBar(
+        title: Text(
+          'Detalle de nota',
+          style: TextStyle(color: Colors.black87),
+        ),
+        iconTheme: IconThemeData(color: Colors.black87),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.delete,
+            ),
+            onPressed: () {
+              context.read<NoteBloc>().add(DeleteNote(note.id!));
+              Navigator.pop(context);
+            },
+          ),
+        ]);
   }
 
   Padding _buildBody(BuildContext context) {
