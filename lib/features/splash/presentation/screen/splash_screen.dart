@@ -37,7 +37,7 @@ class _SplashScreenState extends State<SplashScreen>
             duration: const Duration(seconds: 1),
             curve: Curves.easeIn,
             child: Image.asset('assets/images/note.png',
-                width: 300.w, height: 300.h),
+                width: 250.w, height: 250.h),
           ),
         ),
       ),

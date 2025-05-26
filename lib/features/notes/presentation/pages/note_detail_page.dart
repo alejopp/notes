@@ -3,6 +3,8 @@ import 'package:bext_notes/features/notes/bloc/note_event.dart';
 import 'package:bext_notes/features/notes/domain/entities/note_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 
 class NoteDetailPage extends StatelessWidget {
   final NoteEntity note;
@@ -43,8 +45,11 @@ class NoteDetailPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Text(DateFormat.yMMMMd().format(note.createdAt),
+              style: Theme.of(context).textTheme.headlineMedium),
+          SizedBox(height: 8.h),
           Text(note.title, style: Theme.of(context).textTheme.headlineMedium),
-          const SizedBox(height: 16),
+          SizedBox(height: 8.h),
           Text(note.content, style: Theme.of(context).textTheme.bodyLarge),
           const Spacer(),
           ElevatedButton.icon(

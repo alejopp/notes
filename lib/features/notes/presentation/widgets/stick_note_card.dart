@@ -2,6 +2,7 @@ import 'package:bext_notes/core/extentions/theme_extention.dart';
 import 'package:bext_notes/features/notes/domain/entities/note_entity.dart';
 import 'package:bext_notes/features/notes/presentation/pages/note_detail_page.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class StickNoteCard extends StatelessWidget {
   final NoteEntity note;
@@ -16,26 +17,45 @@ class StickNoteCard extends StatelessWidget {
     return CustomPaint(
       painter: NotePainter(context),
       child: Container(
-        padding: const EdgeInsets.only(top: 16, left: 8, right: 8, bottom: 8),
-        child: ListTile(
-          title: Text(
-            note.title,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: context.colorScheme.onPrimary,
-            ),
-          ),
-          subtitle: Text(
-            note.content,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(color: context.colorScheme.onPrimary),
-          ),
+        padding: const EdgeInsets.all(12),
+        child: InkWell(
           onTap: () => Navigator.push(
             context,
             MaterialPageRoute(
               builder: (_) => NoteDetailPage(note: note),
             ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                DateFormat.yMMMMd().format(note.createdAt),
+                style: TextStyle(
+                  fontStyle: FontStyle.italic,
+                  fontSize: 12,
+                  color: context.colorScheme.onPrimary,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                note.title,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: context.colorScheme.onPrimary,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                note.content,
+                maxLines: 4,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: context.colorScheme.onPrimary,
+                  fontSize: 14,
+                ),
+              ),
+            ],
           ),
         ),
       ),
