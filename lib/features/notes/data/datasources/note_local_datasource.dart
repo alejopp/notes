@@ -5,15 +5,28 @@ import '../models/note_model.dart';
 
 class NoteLocalDatasource {
   static Database? _db;
+  final bool useMemory;
+  final Database? testDb;
+
+  NoteLocalDatasource({this.useMemory = false, this.testDb});
 
   Future<Database> get database async {
     if (_db != null) return _db!;
+
+    if (testDb != null) {
+      _db = testDb!;
+      return _db!;
+    }
+
     _db = await _initDB();
     return _db!;
   }
 
   Future<Database> _initDB() async {
-    final path = join(await getDatabasesPath(), 'notes.db');
+    final path = useMemory
+        ? inMemoryDatabasePath
+        : join(await getDatabasesPath(), 'notes.db');
+
     return await openDatabase(
       path,
       version: 1,
