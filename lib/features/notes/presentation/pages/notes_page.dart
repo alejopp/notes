@@ -4,8 +4,8 @@ import 'package:bext_notes/features/auth/bloc/auth_state.dart';
 import 'package:bext_notes/features/notes/bloc/note_bloc.dart';
 import 'package:bext_notes/features/notes/bloc/note_event.dart';
 import 'package:bext_notes/features/notes/bloc/note_state.dart';
+import 'package:bext_notes/features/notes/bloc/note_view_cubit.dart';
 import 'package:bext_notes/features/notes/domain/entities/note_entity.dart';
-import 'package:bext_notes/features/notes/presentation/cubit/note_view_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

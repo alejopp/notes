@@ -1,8 +1,5 @@
-import 'package:bext_notes/features/auth/bloc/auth_bloc.dart';
-import 'package:bext_notes/features/auth/bloc/auth_event.dart';
-import 'package:bext_notes/features/auth/bloc/auth_state.dart';
-import 'package:bext_notes/features/notes/bloc/note_bloc.dart';
-import 'package:bext_notes/features/notes/bloc/note_state.dart';
+import 'package:bext_notes/features/auth/bloc/bloc.dart';
+import 'package:bext_notes/features/notes/bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -11,88 +8,106 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final email = context.select((AuthBloc bloc) => bloc.state is Authenticated
+        ? (bloc.state as Authenticated).user.email
+        : 'Desconocido');
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Perfil'),
         centerTitle: true,
       ),
-      body: BlocBuilder<AuthBloc, AuthState>(
-        builder: (context, authState) {
-          if (authState is Authenticated) {
-            final user = authState.user;
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Center(
-                  child: CircleAvatar(
-                    radius: 40,
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    child: Text(
-                      user.email[0].toUpperCase(),
-                      style: const TextStyle(fontSize: 30, color: Colors.white),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Center(
-                  child: Text(
-                    user.email,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                BlocBuilder<NoteBloc, NoteState>(
-                  builder: (context, noteState) {
-                    if (noteState is NoteLoaded) {
-                      final count = noteState.notes.length;
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const Text(
-                            'Total de notas:',
-                            style: TextStyle(fontWeight: FontWeight.w600),
+      body: Column(
+        children: [
+          const SizedBox(height: 40),
+          FractionallySizedBox(
+            widthFactor: 0.5,
+            child: Image.asset('assets/images/note.png'),
+          ),
+          const SizedBox(height: 32),
+          Divider(color: Colors.grey[400]),
+          ListTile(
+            leading: const Icon(Icons.email_outlined),
+            title: Text('Email: $email'),
+          ),
+          Divider(color: Colors.grey[400]),
+          BlocBuilder<NoteBloc, NoteState>(
+            builder: (context, state) {
+              final noteCount = state is NoteLoaded ? state.notes.length : 0;
+              return ListTile(
+                leading: const Icon(Icons.sticky_note_2_outlined),
+                title: Row(
+                  children: [
+                    const Text('Notas creadas:  '),
+                    InkWell(
+                      borderRadius: BorderRadius.circular(8),
+                      onTap: () {},
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.amber.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          '$noteCount',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.amber,
                           ),
-                          Text(
-                            '$count',
-                            style: Theme.of(context)
-                                .textTheme
-                                .headlineSmall
-                                ?.copyWith(
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                          ),
-                        ],
-                      );
-                    } else if (noteState is NoteLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else {
-                      return const Center(
-                          child: Text('No se pudo cargar el total de notas.'));
-                    }
-                  },
-                ),
-                const SizedBox(height: 24),
-                OutlinedButton.icon(
-                  onPressed: () {
-                    context.read<AuthBloc>().add(LogoutRequested());
-                  },
-                  icon: const Icon(Icons.logout),
-                  label: const Text('Cerrar sesión'),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 24, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            );
-          } else {
-            return const Center(child: Text('Usuario no autenticado'));
-          }
-        },
+              );
+            },
+          ),
+          Divider(color: Colors.grey[400]),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            child: GestureDetector(
+              onTap: () {
+                _confirmLogout(context);
+              },
+              child: Text(
+                'Cerrar sesión',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.primary,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
+  }
+
+  Future<void> _confirmLogout(BuildContext context) async {
+    final shouldLogout = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('¿Cerrar sesión?'),
+        content: const Text('¿Estás seguro de que deseas cerrar sesión?'),
+        actions: [
+          TextButton(
+            child: const Text('Cancelar'),
+            onPressed: () => Navigator.of(context).pop(false),
+          ),
+          TextButton(
+            child: const Text('Salir'),
+            onPressed: () => Navigator.of(context).pop(true),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldLogout == true) {
+      context.read<AuthBloc>().add(LogoutRequested());
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Sesión cerrada')),
+      );
+    }
   }
 }
