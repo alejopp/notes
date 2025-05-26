@@ -14,7 +14,12 @@ class ProfilePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Perfil'),
+        title: const Text(
+          'Perfil',
+          style: TextStyle(
+            color: Colors.black87,
+          ),
+        ),
         centerTitle: true,
       ),
       body: Column(

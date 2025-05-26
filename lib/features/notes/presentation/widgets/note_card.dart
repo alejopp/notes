@@ -1,9 +1,9 @@
 import 'package:bext_notes/core/extentions/theme_extention.dart';
-import 'package:bext_notes/core/widgets/cards/stick_note_card.dart';
 import 'package:bext_notes/features/notes/bloc/note_bloc.dart';
 import 'package:bext_notes/features/notes/bloc/note_event.dart';
 import 'package:bext_notes/features/notes/domain/entities/note_entity.dart';
 import 'package:bext_notes/features/notes/presentation/pages/note_detail_page.dart';
+import 'package:bext_notes/features/notes/presentation/widgets/stick_note_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

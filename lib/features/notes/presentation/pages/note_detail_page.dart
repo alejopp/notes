@@ -12,34 +12,39 @@ class NoteDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Detalle de nota'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.delete),
-            onPressed: () {
-              context.read<NoteBloc>().add(DeleteNote(note.id!));
-              Navigator.pop(context);
-            },
-          ),
-        ],
+      appBar: _buildAppBar(context),
+      body: _buildBody(context),
+    );
+  }
+
+  AppBar _buildAppBar(BuildContext context) {
+    return AppBar(title: Text('Detalle de nota'), actions: [
+      IconButton(
+        icon: const Icon(Icons.delete),
+        onPressed: () {
+          context.read<NoteBloc>().add(DeleteNote(note.id!));
+          Navigator.pop(context);
+        },
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(note.title, style: Theme.of(context).textTheme.headlineMedium),
-            const SizedBox(height: 16),
-            Text(note.content, style: Theme.of(context).textTheme.bodyLarge),
-            const Spacer(),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.edit),
-              label: const Text('Editar nota'),
-              onPressed: () => _showEditDialog(context, note),
-            )
-          ],
-        ),
+    ]);
+  }
+
+  Padding _buildBody(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(note.title, style: Theme.of(context).textTheme.headlineMedium),
+          const SizedBox(height: 16),
+          Text(note.content, style: Theme.of(context).textTheme.bodyLarge),
+          const Spacer(),
+          ElevatedButton.icon(
+            icon: const Icon(Icons.edit),
+            label: const Text('Editar nota'),
+            onPressed: () => _showEditDialog(context, note),
+          )
+        ],
       ),
     );
   }
