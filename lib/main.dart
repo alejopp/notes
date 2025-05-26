@@ -1,6 +1,5 @@
 import 'package:bext_notes/core/router/root_router.dart';
-import 'package:bext_notes/core/theme/app_theme.dart';
-import 'package:bext_notes/features/auth/data/repositories/auth_reposotory_impl.dart';
+import 'package:bext_notes/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -34,36 +33,24 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-            create: (_) => AuthBloc(authRepository)..add(CheckAuthStatus())),
+          create: (_) => AuthBloc(authRepository)..add(CheckAuthStatus()),
+        ),
         BlocProvider(create: (_) => ThemeCubit()),
         BlocProvider(
           create: (_) => NoteBloc(
-            NoteRepositoryImpl(
-              NoteLocalDatasource(),
-            ),
-          )..add(
-              LoadNotes(),
-            ),
+            NoteRepositoryImpl(NoteLocalDatasource()),
+          )..add(LoadNotes()),
         ),
-        BlocProvider(
-          create: (_) => NoteViewCubit(),
-        ),
+        BlocProvider(create: (_) => NoteViewCubit()),
         BlocProvider(create: (_) => SettingCubit()),
       ],
       child: BlocBuilder<ThemeCubit, ThemeMode>(
         builder: (context, themeMode) {
           return ScreenUtilInit(
-            designSize: Size(360, 690),
+            designSize: const Size(360, 690),
             minTextAdapt: true,
             splitScreenMode: true,
-            child: MaterialApp(
-              debugShowCheckedModeBanner: false,
-              title: 'Notas',
-              themeMode: themeMode,
-              theme: AppTheme.lightTheme,
-              darkTheme: AppTheme.darkTheme,
-              home: const RootRouter(),
-            ),
+            child: const RootRouter(),
           );
         },
       ),

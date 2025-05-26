@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 // }
 
 class ThemeCubit extends Cubit<ThemeMode> {
-  static const _themeKey = 'theme_mode';
+  static const _themeKey = 'themeMode';
 
   ThemeCubit() : super(ThemeMode.system) {
     _loadTheme();
@@ -16,7 +16,7 @@ class ThemeCubit extends Cubit<ThemeMode> {
 
   void setTheme(ThemeMode mode) async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setString('theme_mode', mode.name);
+    prefs.setString('themeMode', mode.name);
     emit(mode);
   }
 

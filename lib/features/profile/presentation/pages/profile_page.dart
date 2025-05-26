@@ -110,9 +110,6 @@ class ProfilePage extends StatelessWidget {
 
     if (shouldLogout == true) {
       context.read<AuthBloc>().add(LogoutRequested());
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Sesión cerrada')),
-      );
     }
   }
 }

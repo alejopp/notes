@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:bext_notes/core/constants/shared_preferences_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../profile/domain/user_entity.dart';
@@ -20,7 +21,10 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<void> logout() async {}
+  Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('token');
+  }
 
   @override
   Future<UserEntity?> getCurrentUser() async {
@@ -44,5 +48,12 @@ class AuthRepositoryImpl implements AuthRepository {
     final rand = Random.secure();
     return List.generate(length, (_) => chars[rand.nextInt(chars.length)])
         .join();
+  }
+
+  @override
+  Future<String?> getCurrentToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    final currentToken = prefs.getString(SharedPreferencesConstants.token.name);
+    return currentToken;
   }
 }

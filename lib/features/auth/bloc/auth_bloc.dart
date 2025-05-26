@@ -24,8 +24,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
 
     on<CheckAuthStatus>((event, emit) async {
+      await Future.delayed(const Duration(seconds: 2));
+      final token = await authRepository.getCurrentToken();
       final user = await authRepository.getCurrentUser();
-      if (user != null) {
+      if (token != null && user != null) {
         emit(Authenticated(user));
       } else {
         emit(Unauthenticated());
