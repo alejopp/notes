@@ -51,11 +51,4 @@ class SettingCubit extends Cubit<SettingState> {
     await prefs.setBool('isTokenVisible', newVal);
     emit(state.copyWith(isTokenVisible: newVal));
   }
-
-  Future<void> refreshToken() async {
-    //TODO Validate
-    final prefs = await SharedPreferences.getInstance();
-    final newToken = prefs.getString('token') ?? '';
-    emit(state.copyWith(token: newToken));
-  }
 }
